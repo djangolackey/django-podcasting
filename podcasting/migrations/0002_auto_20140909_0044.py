@@ -15,10 +15,6 @@ class Migration(migrations.Migration):
             name='enclosure',
             options={'ordering': ('mime',), 'verbose_name': 'Enclosure', 'verbose_name_plural': 'Enclosures'},
         ),
-        migrations.RemoveField(
-            model_name='enclosure',
-            name='episode',
-        ),
         migrations.AddField(
             model_name='episode',
             name='enclosure',

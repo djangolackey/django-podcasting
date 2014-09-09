@@ -3,6 +3,13 @@ from __future__ import unicode_literals
 
 from django.db import models, migrations
 
+def move_enclosure_fk(apps, schema_editor):
+  Enclosure = apps.get_model('podcasting', 'Enclosure')
+  Episode = apps.get_model('podcasting', 'Episode')
+  for enclosure in Enclosure.objects.all():
+    episode = Episode.objects.get(id=enclosure.episode.id);
+    episode.enclosure = enclosure
+    episode.save()
 
 class Migration(migrations.Migration):
 
@@ -11,4 +18,11 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.RunPython(move_enclosure_fk),
+
+        migrations.RemoveField(
+            model_name='enclosure',
+            name='episode',
+        ),
+
     ]
