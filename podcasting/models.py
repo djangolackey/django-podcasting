@@ -276,7 +276,7 @@ class Episode(models.Model):
     published = models.DateTimeField(_("published"), null=True, blank=True, editable=False)
 
     show = models.ManyToManyField(Show, verbose_name=_("Podcasts"))
-    enclosure = models.ForeignKey(Enclosure, verbose_name=_("enclosure"))
+    enclosure = models.ForeignKey('podcasting.Enclosure', verbose_name=_("enclosure"))
 
     enable_comments = models.BooleanField(default=True)
 
@@ -424,9 +424,9 @@ class Enclosure(models.Model):
     """
     An enclosure is one, of possibly many, files/filetypes of an episode.
     """
-    if settings.PODCASTING_MIME_CHOICES: 
+    try:
         MIME_CHOICES = settings.PODCASTING_MIME_CHOICES
-    else: 
+    except AttributeError: 
         MIME_CHOICES = (
             ("aiff", "audio/aiff"),
             ("flac", "audio/flac"),
@@ -469,7 +469,7 @@ class Enclosure(models.Model):
         help_text=_("Duration of the audio file, in seconds (always as integer)."))
 
     class Meta:
-        ordering = ("mime")
+        ordering = ("mime",)
         verbose_name = _("Enclosure")
         verbose_name_plural = _("Enclosures")
 

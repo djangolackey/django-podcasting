@@ -30,14 +30,15 @@ class ShowAdmin(admin.ModelAdmin):
     published_flag.boolean = True
 
     def show_site(self, obj):
-        return obj.site.name
-    show_site.short_description = "Site"
+        return ', '.join([site.name for site in obj.site.all()])
+        #return obj.site.name
+    show_site.short_description = "Sites"
 
 
 class EpisodeAdmin(admin.ModelAdmin):
     form = AdminEpisodeForm
 
-    list_display = ["title", "show", "slug", "episode_site", "published_flag"]
+    list_display = ["title", "episode_show", "slug", "episode_site", "published_flag"]
     list_filter = ["show", "published"]
     if AdminThumbnail:
         list_display.append("admin_thumbnail")
@@ -51,9 +52,14 @@ class EpisodeAdmin(admin.ModelAdmin):
     published_flag.short_description = _("Published")
     published_flag.boolean = True
 
+    def episode_show(self, obj):
+        return ', '.join([show.title for show in obj.show.all()])
+    episode_show.short_description = "Shows"
+
     def episode_site(self, obj):
-        return obj.show.site.name
-    episode_site.short_description = "Site"
+        return ', '.join([site.name for site in show.site.all() for show in obj.show.all()])
+#       return obj.show.site.name
+    episode_site.short_description = "Sites"
 
     def save_form(self, request, form, change):
         # this is done for explicitness that we want form.save to commit
@@ -62,8 +68,8 @@ class EpisodeAdmin(admin.ModelAdmin):
 
 
 class EnclosureAdmin(admin.ModelAdmin):
-    list_display = ("episode", "mime", "url")
-    list_filter = ("episode",)
+    list_display = ("mime", "url")
+    list_filter = ("mime",)
 
 
 class EmbedMediaAdmin(admin.ModelAdmin):
