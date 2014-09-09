@@ -102,7 +102,7 @@ class Show(models.Model):
     updated = models.DateTimeField(_("updated"), auto_now=True, editable=False)
     published = models.DateTimeField(_("published"), null=True, blank=True, editable=False)
 
-    site = models.ForeignKey(Site, verbose_name=_('Site'))
+    site = models.ManyToManyField(Site, verbose_name=_('Sites'))
 
     ttl = models.PositiveIntegerField(
         _("ttl"), default=1440,
@@ -275,7 +275,8 @@ class Episode(models.Model):
     updated = models.DateTimeField(_("updated"), auto_now=True, editable=False)
     published = models.DateTimeField(_("published"), null=True, blank=True, editable=False)
 
-    show = models.ForeignKey(Show, verbose_name=_("Podcast"))
+    show = models.ManyToManyField(Show, verbose_name=_("Podcasts"))
+    enclosure = models.ForeignKey(Enclosure, verbose_name=_("enclosure"))
 
     enable_comments = models.BooleanField(default=True)
 
@@ -433,8 +434,6 @@ class Enclosure(models.Model):
         ("wav", "audio/wav"),
     )
 
-    episode = models.ForeignKey(Episode, verbose_name=_("episode"))
-
     url = models.URLField(
         _("url"),
         help_text=_("""URL of the media file. <br /> It is <strong>very</strong>
@@ -467,8 +466,7 @@ class Enclosure(models.Model):
         help_text=_("Duration of the audio file, in seconds (always as integer)."))
 
     class Meta:
-        ordering = ("episode", "mime")
-        unique_together = ("episode", "mime")
+        ordering = ("mime")
         verbose_name = _("Enclosure")
         verbose_name_plural = _("Enclosures")
 
