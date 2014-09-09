@@ -15,8 +15,8 @@ from podcasting.utils.twitter import can_tweet
 class ShowAdmin(admin.ModelAdmin):
     form = AdminShowForm
 
-    list_display = ["title", "slug", "show_site", "published_flag"]
-    list_filter = ["title", "published", "site"]
+    list_display = ["title", "slug", "show_sites", "published_flag"]
+    list_filter = ["title", "published", "sites"]
     if AdminThumbnail:
         list_display.append("admin_thumbnail")
         admin_thumbnail = AdminThumbnail(image_field="admin_thumb_sm")
@@ -29,17 +29,17 @@ class ShowAdmin(admin.ModelAdmin):
     published_flag.short_description = _("Published")
     published_flag.boolean = True
 
-    def show_site(self, obj):
-        return ', '.join([site.name for site in obj.site.all()])
+    def show_sites(self, obj):
+        return ', '.join([site.name for site in obj.sites.all()])
         #return obj.site.name
-    show_site.short_description = "Sites"
+    show_sites.short_description = "Sites"
 
 
 class EpisodeAdmin(admin.ModelAdmin):
     form = AdminEpisodeForm
 
-    list_display = ["title", "episode_show", "slug", "episode_site", "published_flag"]
-    list_filter = ["show", "published"]
+    list_display = ["title", "episode_shows", "slug", "episode_sites", "published_flag"]
+    list_filter = ["shows", "published"]
     if AdminThumbnail:
         list_display.append("admin_thumbnail")
         admin_thumbnail = AdminThumbnail(image_field="admin_thumb_sm")
@@ -52,14 +52,18 @@ class EpisodeAdmin(admin.ModelAdmin):
     published_flag.short_description = _("Published")
     published_flag.boolean = True
 
-    def episode_show(self, obj):
-        return ', '.join([show.title for show in obj.show.all()])
-    episode_show.short_description = "Shows"
+    def episode_shows(self, obj):
+        return ', '.join([show.title for show in obj.shows.all()])
+    episode_shows.short_description = "Shows"
 
-    def episode_site(self, obj):
-        return ', '.join([site.name for site in show.site.all() for show in obj.show.all()])
-#       return obj.show.site.name
-    episode_site.short_description = "Sites"
+    def episode_sites(self, obj):
+        sites = list()
+        for show in obj.shows.all():
+            for site in show.sites.all():
+                if site not in sites:
+                    sites.append(site)
+        return ', '.join([site.name for site in sites])
+    episode_sites.short_description = "Sites"
 
     def save_form(self, request, form, change):
         # this is done for explicitness that we want form.save to commit

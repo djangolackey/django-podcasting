@@ -123,7 +123,7 @@ class BaseEpisodeForm(forms.ModelForm):
             raise forms.ValidationError(
                 _("An episode must have at least one enclosure or media file before publishing.\n "
                   "Uncheck, save this episode, and add an encoslure before publishing."))
-        elif not self.instance.show.published:
+        elif not self.instance.is_show_published:
             raise forms.ValidationError(_("The show for this episode is not yet published"))
         self.instance.published = now()
 
@@ -206,7 +206,7 @@ class AdminShowForm(forms.ModelForm):
     class Meta:
         model = Show
         fields = [
-            "site",
+            "sites",
             "original_image",
             "author_text",
             "owner",
@@ -253,7 +253,7 @@ class AdminEpisodeForm(forms.ModelForm):
     class Meta:
         model = Episode
         fields = [
-            "show",
+            "shows",
             "original_image",
             "author_text",
             "title", "subtitle",
@@ -277,7 +277,7 @@ class AdminEpisodeForm(forms.ModelForm):
             raise forms.ValidationError(
                 _("An episode must have at least one enclosure or media file before publishing.\n "
                   "Uncheck, save this episode, and add an encoslure before publishing."))
-        elif not self.instance.show.published:
+        elif not self.instance.is_show_published:
             raise forms.ValidationError(_("The show for this episode is not yet published"))
         self.instance.published = now()
 

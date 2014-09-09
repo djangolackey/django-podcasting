@@ -418,6 +418,11 @@ class Episode(models.Model):
     def get_share_description(self):
         return "{0}...".format(self.description[:512])
 
+    def is_show_published(self):
+        for show in self.shows.all():
+           if show.published:
+               return True
+        return False
 
 @python_2_unicode_compatible
 class Enclosure(models.Model):
@@ -436,7 +441,7 @@ class Enclosure(models.Model):
             ("flac", "audio/flac"),
             ("wav", "audio/wav"),
         )
-
+ 
     url = models.URLField(
         _("url"),
         help_text=_("""URL of the media file. <br /> It is <strong>very</strong>
