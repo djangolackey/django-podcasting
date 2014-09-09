@@ -424,15 +424,18 @@ class Enclosure(models.Model):
     """
     An enclosure is one, of possibly many, files/filetypes of an episode.
     """
-    MIME_CHOICES = (
-        ("aiff", "audio/aiff"),
-        ("flac", "audio/flac"),
-        ("mp3", "audio/mpeg"),
-        ("mp4", "audio/mp4"),
-        ("ogg", "audio/ogg"),
-        ("flac", "audio/flac"),
-        ("wav", "audio/wav"),
-    )
+    if settings.PODCASTING_MIME_CHOICES: 
+        MIME_CHOICES = settings.PODCASTING_MIME_CHOICES
+    else: 
+        MIME_CHOICES = (
+            ("aiff", "audio/aiff"),
+            ("flac", "audio/flac"),
+            ("mp3", "audio/mpeg"),
+            ("mp4", "audio/mp4"),
+            ("ogg", "audio/ogg"),
+            ("flac", "audio/flac"),
+            ("wav", "audio/wav"),
+        )
 
     url = models.URLField(
         _("url"),
