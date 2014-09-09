@@ -21,14 +21,14 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(default=0, verbose_name='enclosure', to='podcasting.Enclosure'),
             preserve_default=False,
         ),
-        migrations.AlterField(
+        migrations.AddField(
             model_name='episode',
-            name='show',
+            name='shows',
             field=models.ManyToManyField(to=b'podcasting.Show', verbose_name='Podcasts'),
         ),
-        migrations.AlterField(
+        migrations.AddField(
             model_name='show',
-            name='site',
+            name='sites',
             field=models.ManyToManyField(to=b'sites.Site', verbose_name='Sites'),
         ),
         migrations.AlterUniqueTogether(

@@ -102,7 +102,7 @@ class Show(models.Model):
     updated = models.DateTimeField(_("updated"), auto_now=True, editable=False)
     published = models.DateTimeField(_("published"), null=True, blank=True, editable=False)
 
-    site = models.ManyToManyField(Site, verbose_name=_('Sites'))
+    sites = models.ManyToManyField(Site, verbose_name=_('Sites'))
 
     ttl = models.PositiveIntegerField(
         _("ttl"), default=1440,
@@ -275,7 +275,7 @@ class Episode(models.Model):
     updated = models.DateTimeField(_("updated"), auto_now=True, editable=False)
     published = models.DateTimeField(_("published"), null=True, blank=True, editable=False)
 
-    show = models.ManyToManyField(Show, verbose_name=_("Podcasts"))
+    shows = models.ManyToManyField(Show, verbose_name=_("Podcasts"))
     enclosure = models.ForeignKey('podcasting.Enclosure', verbose_name=_("enclosure"))
 
     enable_comments = models.BooleanField(default=True)
