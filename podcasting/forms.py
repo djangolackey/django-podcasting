@@ -74,11 +74,6 @@ class BaseEpisodeForm(forms.ModelForm):
         widget=CustomAdminThumbnailWidget,
         help_text=Episode._meta.get_field("original_image").help_text)
 
-    publish = forms.BooleanField(
-        required=False,
-        help_text=_("Checking this will publish this episode on the site, no turning back."),
-    )
-
     if can_tweet():
         tweet = forms.BooleanField(
             required=False,
@@ -93,7 +88,7 @@ class BaseEpisodeForm(forms.ModelForm):
             "description",
             "tracklist",
             "hours", "minutes", "seconds",
-            "publish",
+            "published",
         ]
         if "taggit" in settings.INSTALLED_APPS:
             fields.append("tags")
@@ -119,31 +114,27 @@ class BaseEpisodeForm(forms.ModelForm):
 
         return instance
 
-    def validate_published(self):
+    def validate_published(self, published):
         if not self.instance.enclosure_set.count() or not self.instance.embedmedia_set.count():
             raise forms.ValidationError(
                 _("An episode must have at least one enclosure or media file before publishing.\n "
                   "Uncheck, save this episode, and add an encoslure before publishing."))
         elif not self.instance.is_show_published:
             raise forms.ValidationError(_("The show for this episode is not yet published"))
-        self.instance.published = now()
+        self.instance.published = published
 
 
 class EpisodeChangeForm(BaseEpisodeForm):
 
-    def __init__(self, *args, **kwargs):
-        super(EpisodeChangeForm, self).__init__(*args, **kwargs)
-        self.fields["publish"].initial = bool(self.instance.published)
-
-    def clean_publish(self):
+    def clean_published(self):
         # clean_publish is called twice, skip the first time when instance is unset
         if not self.instance.pk:
             return
         # do nothing if already published
         if self.instance.published:
             return
-        if self.cleaned_data["publish"]:
-            self.validate_published()
+        if self.cleaned_data["published"]:
+            self.validate_published(self.cleaned_data["published"])
 
 
 class EpisodeITunesChangeForm(EpisodeChangeForm):
@@ -158,9 +149,9 @@ class EpisodeITunesChangeForm(EpisodeChangeForm):
 
 class EpisodeAddForm(BaseEpisodeForm):
 
-    def clean_publish(self):
-        if self.cleaned_data["publish"]:
-            self.validate_published()
+    def clean_published(self):
+        if self.cleaned_data["published"]:
+            self.validate_published(self.cleaned_data["published"])
 
 
 class EpisodeITunesAddForm(EpisodeAddForm):
@@ -254,11 +245,6 @@ class AdminShowForm(forms.ModelForm):
 
 class AdminEpisodeForm(forms.ModelForm):
 
-    publish = forms.BooleanField(
-        label=_("publish"),
-        required=False,
-        help_text=_("Checking this will publish this episode on the site, no turning back."))
-
     if can_tweet():
         tweet = forms.BooleanField(
             required=False,
@@ -274,7 +260,7 @@ class AdminEpisodeForm(forms.ModelForm):
             "description",
             "tracklist",
             "hours", "minutes", "seconds",
-            "publish",
+            "published",
             "keywords",
             "explicit",
             "block",
@@ -282,28 +268,24 @@ class AdminEpisodeForm(forms.ModelForm):
         if "taggit" in settings.INSTALLED_APPS:
             fields.append("tags")
 
-    def __init__(self, *args, **kwargs):
-        super(AdminEpisodeForm, self).__init__(*args, **kwargs)
-        self.fields["publish"].initial = bool(self.instance.published)
-
-    def validate_published(self):
+    def validate_published(self, published):
         if not self.instance.enclosure_set.count() and not self.instance.embedmedia_set.count():
             raise forms.ValidationError(
                 _("An episode must have at least one enclosure or media file before publishing.\n "
                   "Uncheck, save this episode, and add an encoslure before publishing."))
         elif not self.instance.is_show_published:
             raise forms.ValidationError(_("The show for this episode is not yet published"))
-        self.instance.published = now()
+        self.instance.published = published
 
-    def clean_publish(self):
+    def clean_published(self):
         # clean_publish is called twice, skip the first time when instance is unset
         if not self.instance.pk:
             return
         # do nothing if already published
         if self.instance.published:
             return
-        if self.cleaned_data["publish"]:
-            self.validate_published()
+        if self.cleaned_data["published"]:
+            self.validate_published(self.cleaned_data["published"])
 
     def save(self):
         episode = super(AdminEpisodeForm, self).save(commit=False)

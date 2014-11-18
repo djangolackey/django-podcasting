@@ -1,6 +1,6 @@
 from django.db.models import Q
 from django.db.models.query import QuerySet
-
+from django.utils import timezone
 from django.contrib.sites.models import Site
 
 
@@ -11,7 +11,8 @@ class EpisodeManager(QuerySet):
         return self.get_queryset().exclude(Q(published=None) | Q(block=True))
 
     def published(self):
-        return self.exclude(published=None)
+        now = timezone.now()
+        return self.filter(published__lte=now).exclude(published=None)
 
     def onsite(self):
         return self.filter(shows__sites=Site.objects.get_current())
