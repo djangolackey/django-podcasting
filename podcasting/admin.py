@@ -1,6 +1,7 @@
 from django.utils.translation import ugettext_lazy as _
 
 from django.contrib import admin
+from django.utils import timezone
 
 try:
     from imagekit.admin import AdminThumbnail
@@ -47,7 +48,8 @@ class EpisodeAdmin(admin.ModelAdmin):
         readonly_fields = ("tweet_text",)
 
     def published_flag(self, obj):
-        return bool(obj.published)
+        now = timezone.now()
+        return bool(obj.published <= now)
     published_flag.short_description = _("Published")
     published_flag.boolean = True
 

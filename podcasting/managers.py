@@ -12,7 +12,7 @@ class EpisodeManager(QuerySet):
 
     def published(self):
         now = timezone.now()
-        return self.filter(published__lte=now).exclude(published=None)
+        return self.exclude(published=None).filter(published__lte=now)
 
     def onsite(self):
         return self.filter(shows__sites=Site.objects.get_current())

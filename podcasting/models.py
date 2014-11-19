@@ -12,7 +12,7 @@ from django.db import models
 from django.template.defaultfilters import slugify
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
-
+from django.utils import timezone
 from django.contrib.sites.models import Site
 
 # until the 1.4 shim is released
@@ -278,7 +278,7 @@ class Episode(models.Model):
 
     created = models.DateTimeField(_("created"), auto_now_add=True, editable=False)
     updated = models.DateTimeField(_("updated"), auto_now=True, editable=False)
-    published = models.DateTimeField(_("published"), null=True, blank=True)
+    published = models.DateTimeField(_("published"), null=True, blank=True )
 
     shows = models.ManyToManyField(Show, verbose_name=_("Podcasts"))
 
